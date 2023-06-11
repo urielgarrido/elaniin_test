@@ -6,23 +6,25 @@ import android.content.IntentSender
 import com.example.elaniin_test.R
 import com.example.elaniin_test.sign_in.model.SignInResult
 import com.example.elaniin_test.sign_in.model.UserData
+import com.facebook.AccessToken
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
-class GoogleAuthUIClient(
+class AuthUIClient(
     private val context: Context,
     private val signInClient: SignInClient
 ) {
 
     private val auth = Firebase.auth
 
-    suspend fun signIn(): IntentSender? {
+    suspend fun signInGoogle(): IntentSender? {
         val result = try {
             signInClient.beginSignIn(buildBeginSignInRequest()).await()
         } catch (e: Exception) {
@@ -33,7 +35,28 @@ class GoogleAuthUIClient(
         return result?.pendingIntent?.intentSender
     }
 
-    suspend fun signInWithIntent(intent: Intent): SignInResult {
+    suspend fun signInFacebook(token: AccessToken): SignInResult {
+        val facebookCredential = FacebookAuthProvider.getCredential(token.token)
+        return try {
+            val user = auth.signInWithCredential(facebookCredential).await().user
+            SignInResult(
+                data = user?.let {
+                    UserData(
+                        userId = it.uid,
+                        username = it.displayName,
+                        profilePictureUrl = it.photoUrl?.toString()
+                    )
+                },
+                errorMessage = null
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+            SignInResult(data = null, errorMessage = e.message)
+        }
+    }
+
+    suspend fun signInWithIntentGoogle(intent: Intent): SignInResult {
         val credential = signInClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
@@ -60,7 +83,7 @@ class GoogleAuthUIClient(
         try {
             signInClient.signOut().await()
             auth.signOut()
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
         }

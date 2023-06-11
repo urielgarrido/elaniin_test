@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Elaniin Test Técnico</string>
     <string name="google_web_client_id">830701239067-muh6e4peek0sb0tbmaj1qq8s05e38lc0.apps.googleusercontent.com</string>
+
+    <string name="facebook_app_id">633585535107140</string>
+    <string name="fb_login_protocol_scheme">fb633585535107140</string>
+    <string name="facebook_client_token">5191d6ec8930316f449674a0b477da3a</string>
+
+
 </resources>

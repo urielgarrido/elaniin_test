@@ -19,7 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.elaniin_test.regions.RegionsScreen
-import com.example.elaniin_test.sign_in.GoogleAuthUIClient
+import com.example.elaniin_test.sign_in.AuthUIClient
 import com.example.elaniin_test.sign_in.SignInScreen
 import com.example.elaniin_test.sign_in.SignInViewModel
 import com.example.elaniin_test.teams.TeamsScreen
@@ -32,7 +32,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var googleAuthUIClient: GoogleAuthUIClient
+    lateinit var authUIClient: AuthUIClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
             Elaniin_testTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "sign_in") {
+                    NavHost(navController = navController, startDestination = getStartDestination()) {
                         composable("sign_in") {
                             val viewModel: SignInViewModel = hiltViewModel()
                             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                                 onResult = { result ->
                                     if (result.resultCode == RESULT_OK) {
                                         lifecycleScope.launch {
-                                            val signInResult = googleAuthUIClient.signInWithIntent(result.data ?: return@launch)
+                                            val signInResult = authUIClient.signInWithIntentGoogle(result.data ?: return@launch)
                                             viewModel.onSignInResult(signInResult)
                                         }
                                     }
@@ -59,7 +59,11 @@ class MainActivity : ComponentActivity() {
 
                             LaunchedEffect(key1 = state.isSignInSuccess) {
                                 if (state.isSignInSuccess) {
-                                    navController.navigate("regions")
+                                    navController.navigate("regions") {
+                                        popUpTo("sign_in") {
+                                            inclusive = true
+                                        }
+                                    }
                                 }
                             }
 
@@ -67,13 +71,18 @@ class MainActivity : ComponentActivity() {
                                 state = state,
                                 onSignInGoogle = {
                                     lifecycleScope.launch {
-                                        val signInIntentSender = googleAuthUIClient.signIn()
+                                        val signInIntentSender = authUIClient.signInGoogle()
                                         launcher.launch(
                                             IntentSenderRequest.Builder(signInIntentSender ?: return@launch).build()
                                         )
                                     }
                                 },
-                                onSignInFacebook = {}
+                                onSignInFacebook = {
+                                    lifecycleScope.launch {
+                                        val signInResult = authUIClient.signInFacebook(it.accessToken)
+                                        viewModel.onSignInResult(signInResult)
+                                    }
+                                }
                             )
                         }
                         composable("regions") {
@@ -86,6 +95,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun getStartDestination(): String {
+        val isLogin = authUIClient.getSignedInUser() != null
+
+        return if (isLogin) {
+            "regions"
+        } else "sign_in"
     }
 }
 

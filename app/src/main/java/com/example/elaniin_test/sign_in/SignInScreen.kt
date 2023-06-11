@@ -20,9 +20,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
+import com.facebook.login.widget.LoginButton
 
 @Composable
-fun SignInScreen(state: SignInState, onSignInGoogle: () -> Unit, onSignInFacebook: () -> Unit) {
+fun SignInScreen(state: SignInState, onSignInGoogle: () -> Unit, onSignInFacebook: (LoginResult) -> Unit) {
 
     val context = LocalContext.current
 
@@ -55,9 +61,24 @@ fun ButtonSignInWithGoogle(onSignInGoogle: () -> Unit) {
 }
 
 @Composable
-fun ButtonSignInWithFacebook(onSignInFacebook: () -> Unit) {
-    Button(onClick = onSignInFacebook, contentPadding = PaddingValues(horizontal = 8.dp)) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = "")
-        Text(text = "Sign-In Facebook", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-    }
+fun ButtonSignInWithFacebook(onSignInFacebook: (LoginResult) -> Unit) {
+    AndroidView({
+        LoginButton(it).apply {
+            val callbackManager = CallbackManager.Factory.create()
+            setPermissions("public_profile")
+            registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+                override fun onCancel() {
+
+                }
+
+                override fun onError(error: FacebookException) {
+                    error.printStackTrace()
+                }
+
+                override fun onSuccess(result: LoginResult) {
+                    onSignInFacebook(result)
+                }
+            })
+        }
+    })
 }
