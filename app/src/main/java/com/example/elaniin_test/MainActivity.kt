@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.elaniin_test.regions.RegionsScreen
+import com.example.elaniin_test.regions.RegionsViewModel
 import com.example.elaniin_test.sign_in.AuthUIClient
 import com.example.elaniin_test.sign_in.SignInScreen
 import com.example.elaniin_test.sign_in.SignInViewModel
@@ -86,7 +87,14 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("regions") {
-                            RegionsScreen(navController = navController)
+                            val viewModel: RegionsViewModel = hiltViewModel()
+                            val state by viewModel.state.collectAsStateWithLifecycle()
+
+                            LaunchedEffect(Unit) {
+                                viewModel.getRegions()
+                            }
+
+                            RegionsScreen(state, state.regions)
                         }
                         composable("teams") {
                             TeamsScreen(navController = navController)
