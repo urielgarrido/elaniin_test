@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.elaniin_test.regions.RegionsScreen
 import com.example.elaniin_test.regions.RegionsViewModel
 import com.example.elaniin_test.sign_in.AuthUIClient
@@ -95,10 +97,19 @@ class MainActivity : ComponentActivity() {
                                 viewModel.getRegions()
                             }
 
-                            RegionsScreen(state, state.regions, userName)
+                            RegionsScreen(state, state.regions, userName, onRegionClick = {
+                                navController.navigate("teams")
+                            })
                         }
-                        composable("teams") {
-                            TeamsScreen(navController = navController)
+                        composable("teams/{regionName}/{regionId}",
+                            arguments = listOf(
+                                navArgument("regionName") { type = NavType.StringType },
+                                navArgument("regionId") { type = NavType.IntType }
+                            )
+                        ) { backStackEntry ->
+                            val regionName = backStackEntry.arguments?.getString("regionName") ?: ""
+                            val regionId = backStackEntry.arguments?.getString("regionId") ?: ""
+                            TeamsScreen(regionName, emptyList())
                         }
                     }
                 }

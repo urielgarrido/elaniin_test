@@ -36,7 +36,7 @@ import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegionsScreen(state: RegionsState, regions: List<Region>, userName: String) {
+fun RegionsScreen(state: RegionsState, regions: List<Region>, userName: String, onRegionClick: (Region) -> Unit) {
 
     val context = LocalContext.current
 
@@ -59,10 +59,14 @@ fun RegionsScreen(state: RegionsState, regions: List<Region>, userName: String) 
         } else {
             LazyColumn(contentPadding = padding, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 item {
-                    Text(text = context.getString(R.string.click_a_region_to_continue), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = context.getString(R.string.click_a_region_to_continue),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
                 items(regions) {
-                    RegionItem(name = it.name)
+                    RegionItem(name = it.name) { onRegionClick(it) }
                 }
             }
         }
@@ -86,9 +90,9 @@ private fun RegionsTopBar(context: Context, userName: String) {
 }
 
 @Composable
-private fun RegionItem(name: String) {
+private fun RegionItem(name: String, onRegionClick: () -> Unit) {
     TextButton(
-        onClick = { }, modifier = Modifier
+        onClick = onRegionClick, modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
     ) {

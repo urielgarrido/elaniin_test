@@ -1,8 +1,12 @@
-package com.example.elaniin_test.regions.model
+package com.example.elaniin_test.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Region(
+data class RegionForIdResponse(
+    @SerializedName("pokedexes") val pokedexes: List<Pokedex>
+)
+
+data class Pokedex(
     @SerializedName("name") val name: String,
     @SerializedName("url") val url: String,
 ) {

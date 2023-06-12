@@ -9,6 +9,7 @@
 
     <string name="click_a_region_to_continue">Seleccione una de las siguientes regiones para continuar</string>
     <string name="get_region_error">No se logró obtener todas las regiones de Pokemon</string>
+    <string name="create_your_first_team">Creá tu primer equipo</string>
 
 
 </resources>
