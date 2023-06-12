@@ -1,6 +1,8 @@
 package com.example.elaniin_test.regions
 
+import android.content.Context
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,24 +25,29 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.elaniin_test.R
 import com.example.elaniin_test.regions.model.Region
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegionsScreen(state: RegionsState, regions: List<Region>) {
+fun RegionsScreen(state: RegionsState, regions: List<Region>, userName: String) {
 
     val context = LocalContext.current
 
     LaunchedEffect(key1 = state.errorMessage) {
         state.errorMessage?.let { error ->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(error), Toast.LENGTH_SHORT).show()
         }
     }
 
     Scaffold(
-        topBar = { RegionsTopBar() },
+        topBar = { RegionsTopBar(context, userName) },
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
@@ -49,6 +58,9 @@ fun RegionsScreen(state: RegionsState, regions: List<Region>) {
             }
         } else {
             LazyColumn(contentPadding = padding, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                item {
+                    Text(text = context.getString(R.string.click_a_region_to_continue), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                }
                 items(regions) {
                     RegionItem(name = it.name)
                 }
@@ -60,20 +72,27 @@ fun RegionsScreen(state: RegionsState, regions: List<Region>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RegionsTopBar() {
-    val userName = "uriel"
+private fun RegionsTopBar(context: Context, userName: String) {
     TopAppBar(title = {
         Text(text = "Hola $userName")
-    }, modifier = Modifier.fillMaxWidth())
+    }, modifier = Modifier.fillMaxWidth(), actions = {
+        IconButton(onClick = {
+            Firebase.auth.signOut()
+            (context as ComponentActivity).finishAffinity()
+        }) {
+            Icon(painter = painterResource(id = R.drawable.ic_logout), contentDescription = "")
+        }
+    })
 }
 
 @Composable
 private fun RegionItem(name: String) {
-    TextButton(onClick = { }, modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp)
+    TextButton(
+        onClick = { }, modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
     ) {
-        Text(text = name, fontSize = 16.sp)
+        Text(text = name.replaceFirstChar { it.uppercaseChar() }, fontSize = 24.sp)
         Spacer(modifier = Modifier.weight(1f))
     }
 

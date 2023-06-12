@@ -7,4 +7,8 @@
     <string name="facebook_client_token">5191d6ec8930316f449674a0b477da3a</string>
 
 
+    <string name="click_a_region_to_continue">Seleccione una de las siguientes regiones para continuar</string>
+    <string name="get_region_error">No se logró obtener todas las regiones de Pokemon</string>
+
+
 </resources>

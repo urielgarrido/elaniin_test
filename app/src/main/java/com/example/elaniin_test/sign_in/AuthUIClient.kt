@@ -79,16 +79,6 @@ class AuthUIClient(
         }
     }
 
-    suspend fun signOut() {
-        try {
-            signInClient.signOut().await()
-            auth.signOut()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if (e is CancellationException) throw e
-        }
-    }
-
     fun getSignedInUser() = auth.currentUser?.let {
         UserData(
             userId = it.uid,

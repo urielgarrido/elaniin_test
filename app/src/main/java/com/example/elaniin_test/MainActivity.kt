@@ -89,12 +89,13 @@ class MainActivity : ComponentActivity() {
                         composable("regions") {
                             val viewModel: RegionsViewModel = hiltViewModel()
                             val state by viewModel.state.collectAsStateWithLifecycle()
+                            val userName = authUIClient.getSignedInUser()!!.username!!
 
                             LaunchedEffect(Unit) {
                                 viewModel.getRegions()
                             }
 
-                            RegionsScreen(state, state.regions)
+                            RegionsScreen(state, state.regions, userName)
                         }
                         composable("teams") {
                             TeamsScreen(navController = navController)
