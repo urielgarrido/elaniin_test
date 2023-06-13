@@ -30,7 +30,7 @@ class FirebaseDataSource @Inject constructor() {
         userId?.let { userId ->
             database.child(userId).child(TEAMS_ROOT).child(newTeam.region).child(newTeam.shareToken).setValue(newTeam).await()
         }
-        return database.child(TEAMS_ROOT).child(newTeam.shareToken).setValue(newTeam).isSuccessful
+        return database.child(TEAMS_ROOT).child(newTeam.region).child(newTeam.shareToken).setValue(newTeam).isSuccessful
     }
 
     suspend fun editTeam(teamToEdit: Team): Boolean {
@@ -38,7 +38,7 @@ class FirebaseDataSource @Inject constructor() {
             database.child(userId).child(TEAMS_ROOT).child(teamToEdit.region).child(teamToEdit.shareToken).setValue(teamToEdit)
                 .await()
         }
-        return database.child(TEAMS_ROOT).child(teamToEdit.shareToken).setValue(teamToEdit).isSuccessful
+        return database.child(TEAMS_ROOT).child(teamToEdit.region).child(teamToEdit.shareToken).setValue(teamToEdit).isSuccessful
     }
 
     suspend fun deleteTeam(teamToDelete: Team): Boolean {
@@ -46,13 +46,17 @@ class FirebaseDataSource @Inject constructor() {
             database.child(userId).child(TEAMS_ROOT).child(teamToDelete.region).child(teamToDelete.shareToken).removeValue()
                 .await()
         }
-        return database.child(TEAMS_ROOT).child(teamToDelete.shareToken).removeValue().isSuccessful
+        return database.child(TEAMS_ROOT).child(teamToDelete.region).child(teamToDelete.shareToken).removeValue().isSuccessful
     }
 
     suspend fun copyTeamFromOtherUser(teamToCopy: Team): Boolean {
-        val snapshot: DataSnapshot = database.child(TEAMS_ROOT).child(teamToCopy.shareToken).get().await()
+        val snapshot: DataSnapshot =
+            database.child(TEAMS_ROOT).child(teamToCopy.region).child(teamToCopy.shareToken).get().await()
         return if (snapshot.exists()) {
-            createTeam(teamToCopy)
+            userId?.let { userId ->
+                database.child(userId).child(TEAMS_ROOT).child(teamToCopy.region).child(teamToCopy.shareToken)
+                    .setValue(teamToCopy).isSuccessful
+            } ?: false
         } else false
     }
 }

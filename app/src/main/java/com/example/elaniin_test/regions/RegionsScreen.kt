@@ -47,10 +47,7 @@ fun RegionsScreen(state: RegionsState, userName: String, onRegionClick: (Region)
     }
 
     Scaffold(
-        topBar = { RegionsTopBar(context, userName) },
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        topBar = { RegionsTopBar(context, userName) }
     ) { padding ->
         if (state.regions.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -62,7 +59,8 @@ fun RegionsScreen(state: RegionsState, userName: String, onRegionClick: (Region)
                     Text(
                         text = context.getString(R.string.click_a_region_to_continue),
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
                 items(state.regions) {
@@ -79,7 +77,7 @@ fun RegionsScreen(state: RegionsState, userName: String, onRegionClick: (Region)
 private fun RegionsTopBar(context: Context, userName: String) {
     TopAppBar(title = {
         Text(text = "Hola $userName")
-    }, modifier = Modifier.fillMaxWidth(), actions = {
+    }, actions = {
         IconButton(onClick = {
             Firebase.auth.signOut()
             (context as ComponentActivity).finishAffinity()

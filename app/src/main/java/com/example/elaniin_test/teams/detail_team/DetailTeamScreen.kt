@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.example.elaniin_test.R
 import com.example.elaniin_test.teams.TeamsState
 import com.example.elaniin_test.teams.create_team.PokemonItem
-import com.example.elaniin_test.teams.create_team.PokemonUIState
 import com.example.elaniin_test.teams.my_teams.model.Pokemon
 import com.example.elaniin_test.teams.my_teams.model.Team
 
@@ -52,7 +51,7 @@ fun DetailTeamScreen(state: TeamsState, onEditTeam: (String, List<Pokemon>) -> U
     }
 
     var teamName by remember { mutableStateOf(state.teamSelected!!.name) }
-    var pokemonsSelected by remember { mutableStateOf(state.teamSelected!!.pokemons.map { PokemonUIState(it.name) }) }
+    var pokemonsSelected by remember { mutableStateOf(state.teamSelected!!.pokemons) }
 
     Scaffold(
         topBar = { TeamSelectedTopBar(state.teamSelected, onDeleteTeam) },
@@ -74,8 +73,7 @@ fun DetailTeamScreen(state: TeamsState, onEditTeam: (String, List<Pokemon>) -> U
             Modifier
                 .fillMaxSize()
                 .padding(paddingValues), verticalArrangement = Arrangement.spacedBy(8.dp)
-        )
-        {
+        ) {
             Text(
                 text = "Edita o elimina este equipo",
                 fontWeight = FontWeight.Bold,
@@ -98,7 +96,7 @@ fun DetailTeamScreen(state: TeamsState, onEditTeam: (String, List<Pokemon>) -> U
             Text(text = "Pokemons: ${pokemonsSelected.map { it.name }}", modifier = Modifier.padding(horizontal = 16.dp))
             Spacer(modifier = Modifier.height(8.dp))
             LazyColumn {
-                items(state.pokemons.map { PokemonUIState(it.name) }) {
+                items(state.pokemons) {
                     PokemonItem(it) { pokemonSelected ->
                         if (pokemonsSelected.indexOf(pokemonSelected) == -1) {
                             if (pokemonsSelected.size < 6) {
