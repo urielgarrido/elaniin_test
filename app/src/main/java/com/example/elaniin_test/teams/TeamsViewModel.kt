@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.elaniin_test.R
 import com.example.elaniin_test.regions.domain.GetRegionByIdUseCase
 import com.example.elaniin_test.teams.create_team.domain.GetPokemonsByPokedexUseCase
+import com.example.elaniin_test.teams.my_teams.domain.CopyTeamUseCase
 import com.example.elaniin_test.teams.my_teams.domain.CreateTeamUseCase
 import com.example.elaniin_test.teams.my_teams.domain.DeleteTeamUseCase
 import com.example.elaniin_test.teams.my_teams.domain.EditTeamUseCase
@@ -29,6 +30,7 @@ class TeamsViewModel @Inject constructor(
     private val createTeamUseCase: CreateTeamUseCase,
     private val editTeamUseCase: EditTeamUseCase,
     private val deleteTeamUseCase: DeleteTeamUseCase,
+    private val copyTeamUseCase: CopyTeamUseCase,
 ) : ViewModel() {
 
     private val regionName: String = checkNotNull(savedStateHandle["regionName"])
@@ -112,6 +114,12 @@ class TeamsViewModel @Inject constructor(
     fun setTeamSelected(team: Team) {
         _state.update {
             it.copy(teamSelected = team)
+        }
+    }
+
+    fun copyTeamFromToken(token: String) {
+        viewModelScope.launch {
+            copyTeamUseCase(regionName, token)
         }
     }
 

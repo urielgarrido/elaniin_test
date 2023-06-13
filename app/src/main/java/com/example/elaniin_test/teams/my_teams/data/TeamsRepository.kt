@@ -21,12 +21,12 @@ class TeamsRepository @Inject constructor(
         return firebaseDataSource.editTeam(teamToEdit)
     }
 
-    suspend fun deleteTeam(teamToDelete: Team): Boolean {
+    fun deleteTeam(teamToDelete: Team): Boolean {
         return firebaseDataSource.deleteTeam(teamToDelete)
     }
 
-    suspend fun copyTeamFromOtherUser(teamToCopy: Team): Boolean {
-        return firebaseDataSource.copyTeamFromOtherUser(teamToCopy)
+    suspend fun copyTeamFromOtherUser(region: String, token: String) {
+        return firebaseDataSource.copyTeamFromOtherUser(region, token)
     }
 
 

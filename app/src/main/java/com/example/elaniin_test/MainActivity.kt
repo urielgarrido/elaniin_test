@@ -157,6 +157,9 @@ class MainActivity : ComponentActivity() {
                                     onClickTeam = {
                                         navController.navigate("detail_team")
                                         viewModel.setTeamSelected(it)
+                                    },
+                                    onClickCopyTeam = { token ->
+                                        viewModel.copyTeamFromToken(token)
                                     }
                                 )
                             }

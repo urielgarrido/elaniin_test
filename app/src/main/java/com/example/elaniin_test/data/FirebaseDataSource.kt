@@ -3,7 +3,6 @@ package com.example.elaniin_test.data
 import com.example.elaniin_test.teams.my_teams.model.Team
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -41,22 +40,23 @@ class FirebaseDataSource @Inject constructor() {
         return database.child(TEAMS_ROOT).child(teamToEdit.region).child(teamToEdit.shareToken).setValue(teamToEdit).isSuccessful
     }
 
-    suspend fun deleteTeam(teamToDelete: Team): Boolean {
+    fun deleteTeam(teamToDelete: Team): Boolean {
         userId?.let { userId ->
-            database.child(userId).child(TEAMS_ROOT).child(teamToDelete.region).child(teamToDelete.shareToken).removeValue()
-                .await()
-        }
-        return database.child(TEAMS_ROOT).child(teamToDelete.region).child(teamToDelete.shareToken).removeValue().isSuccessful
+            return database.child(userId).child(TEAMS_ROOT).child(teamToDelete.region).child(teamToDelete.shareToken)
+                .removeValue()
+                .isSuccessful
+        } ?: return false
     }
 
-    suspend fun copyTeamFromOtherUser(teamToCopy: Team): Boolean {
+    suspend fun copyTeamFromOtherUser(region: String, token: String) {
         val snapshot: DataSnapshot =
-            database.child(TEAMS_ROOT).child(teamToCopy.region).child(teamToCopy.shareToken).get().await()
-        return if (snapshot.exists()) {
+            database.child(TEAMS_ROOT).child(region).child(token).get().await()
+        val teamToCopy = snapshot.getValue<Team>()
+        if (snapshot.exists()) {
             userId?.let { userId ->
-                database.child(userId).child(TEAMS_ROOT).child(teamToCopy.region).child(teamToCopy.shareToken)
-                    .setValue(teamToCopy).isSuccessful
-            } ?: false
-        } else false
+                database.child(userId).child(TEAMS_ROOT).child(region).child(token)
+                    .setValue(teamToCopy).await()
+            }
+        }
     }
 }

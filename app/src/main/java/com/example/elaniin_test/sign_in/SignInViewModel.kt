@@ -23,8 +23,4 @@ class SignInViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun resetState() {
-        _state.update { SignInState() }
-    }
-
 }
