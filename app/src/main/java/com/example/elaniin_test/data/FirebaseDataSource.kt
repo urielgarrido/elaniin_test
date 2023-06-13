@@ -28,25 +28,31 @@ class FirebaseDataSource @Inject constructor() {
 
     suspend fun createTeam(newTeam: Team): Boolean {
         userId?.let { userId ->
-           database.child(userId).child(TEAMS_ROOT).child(newTeam.region).push().setValue(newTeam).await()
+            database.child(userId).child(TEAMS_ROOT).child(newTeam.region).child(newTeam.shareToken).setValue(newTeam).await()
         }
-       return database.child(TEAMS_ROOT).child(newTeam.shareToken).setValue(newTeam).isSuccessful
+        return database.child(TEAMS_ROOT).child(newTeam.shareToken).setValue(newTeam).isSuccessful
     }
 
-    suspend fun editTeam() {
-
+    suspend fun editTeam(teamToEdit: Team): Boolean {
+        userId?.let { userId ->
+            database.child(userId).child(TEAMS_ROOT).child(teamToEdit.region).child(teamToEdit.shareToken).setValue(teamToEdit)
+                .await()
+        }
+        return database.child(TEAMS_ROOT).child(teamToEdit.shareToken).setValue(teamToEdit).isSuccessful
     }
 
-    suspend fun deleteTeam() {
-
+    suspend fun deleteTeam(teamToDelete: Team): Boolean {
+        userId?.let { userId ->
+            database.child(userId).child(TEAMS_ROOT).child(teamToDelete.region).child(teamToDelete.shareToken).removeValue()
+                .await()
+        }
+        return database.child(TEAMS_ROOT).child(teamToDelete.shareToken).removeValue().isSuccessful
     }
 
-    suspend fun copyTeamFromOtherUser(teamToCopy: Team) {
+    suspend fun copyTeamFromOtherUser(teamToCopy: Team): Boolean {
         val snapshot: DataSnapshot = database.child(TEAMS_ROOT).child(teamToCopy.shareToken).get().await()
-        if (snapshot.exists()) {
-            userId?.let { userId ->
-                database.child(userId).child(TEAMS_ROOT).setValue(teamToCopy)
-            }
-        }
+        return if (snapshot.exists()) {
+            createTeam(teamToCopy)
+        } else false
     }
 }

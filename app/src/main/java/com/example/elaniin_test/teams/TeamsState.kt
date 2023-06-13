@@ -11,5 +11,6 @@ data class TeamsState(
     val pokemons: List<Pokemon> = emptyList(),
     val pokemonsSelected: List<Pokemon> = emptyList(),
     val teams: List<Team> = emptyList(),
+    val teamSelected: Team? = null,
     val errorId: Int? = null
 )

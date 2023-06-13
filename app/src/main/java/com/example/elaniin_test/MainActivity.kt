@@ -147,11 +147,16 @@ class MainActivity : ComponentActivity() {
                                     viewModel.getAllTeamsByRegion(myTeams)
                                 }
 
+                                LaunchedEffect(Unit) {
+                                    viewModel.getPokemonsByPokedex()
+                                }
+
                                 TeamsScreen(
                                     state,
                                     onClickCreateTeam = { navController.navigate("create_team") },
                                     onClickTeam = {
                                         navController.navigate("detail_team")
+                                        viewModel.setTeamSelected(it)
                                     }
                                 )
                             }
@@ -185,7 +190,25 @@ class MainActivity : ComponentActivity() {
                                 val viewModel: TeamsViewModel = backStackEntry.sharedViewModel(navController)
                                 val state by viewModel.state.collectAsStateWithLifecycle()
 
-                                DetailTeamScreen(state)
+                                DetailTeamScreen(
+                                    state,
+                                    onEditTeam = { teamName, pokemons ->
+                                        navController.navigate("teams/${state.regionName}/${state.regionId}") {
+                                            popUpTo("teams_flow") {
+                                                inclusive = true
+                                            }
+                                        }
+                                        viewModel.editTeam(teamName, pokemons)
+                                    },
+                                    onDeleteTeam = {
+                                        navController.navigate("teams/${state.regionName}/${state.regionId}") {
+                                            popUpTo("teams_flow") {
+                                                inclusive = true
+                                            }
+                                        }
+                                        viewModel.deleteTeam()
+                                    }
+                                )
                             }
 
                         }

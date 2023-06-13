@@ -17,16 +17,16 @@ class TeamsRepository @Inject constructor(
         return firebaseDataSource.createTeam(newTeam)
     }
 
-    suspend fun editTeam() {
-        firebaseDataSource.editTeam()
+    suspend fun editTeam(teamToEdit: Team): Boolean {
+        return firebaseDataSource.editTeam(teamToEdit)
     }
 
-    suspend fun deleteTeam() {
-        firebaseDataSource.deleteTeam()
+    suspend fun deleteTeam(teamToDelete: Team): Boolean {
+        return firebaseDataSource.deleteTeam(teamToDelete)
     }
 
-    suspend fun copyTeamFromOtherUser(teamToCopy: Team) {
-        firebaseDataSource.copyTeamFromOtherUser(teamToCopy)
+    suspend fun copyTeamFromOtherUser(teamToCopy: Team): Boolean {
+        return firebaseDataSource.copyTeamFromOtherUser(teamToCopy)
     }
 
 

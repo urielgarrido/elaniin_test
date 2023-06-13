@@ -7,6 +7,8 @@ import com.example.elaniin_test.R
 import com.example.elaniin_test.regions.domain.GetRegionByIdUseCase
 import com.example.elaniin_test.teams.create_team.domain.GetPokemonsByPokedexUseCase
 import com.example.elaniin_test.teams.my_teams.domain.CreateTeamUseCase
+import com.example.elaniin_test.teams.my_teams.domain.DeleteTeamUseCase
+import com.example.elaniin_test.teams.my_teams.domain.EditTeamUseCase
 import com.example.elaniin_test.teams.my_teams.domain.GetAllTeamsByRegionUseCase
 import com.example.elaniin_test.teams.my_teams.model.Pokemon
 import com.example.elaniin_test.teams.my_teams.model.Team
@@ -24,7 +26,9 @@ class TeamsViewModel @Inject constructor(
     private val getAllTeamsByRegionUseCase: GetAllTeamsByRegionUseCase,
     private val getRegionByIdUseCase: GetRegionByIdUseCase,
     private val getPokemonsByPokedexUseCase: GetPokemonsByPokedexUseCase,
-    private val createTeamUseCase: CreateTeamUseCase
+    private val createTeamUseCase: CreateTeamUseCase,
+    private val editTeamUseCase: EditTeamUseCase,
+    private val deleteTeamUseCase: DeleteTeamUseCase,
 ) : ViewModel() {
 
     private val regionName: String = checkNotNull(savedStateHandle["regionName"])
@@ -67,12 +71,28 @@ class TeamsViewModel @Inject constructor(
         }
     }
 
-    fun editTeam() {
-
+    fun editTeam(teamName: String, pokemons: List<Pokemon>) {
+        val teamToEdit = state.value.teamSelected?.copy(name = teamName, pokemons = pokemons)
+        viewModelScope.launch {
+            val result = editTeamUseCase(teamToEdit ?: return@launch)
+            if (result) {
+                _state.update {
+                    it.copy(teamSelected = null)
+                }
+            }
+        }
     }
 
     fun deleteTeam() {
-
+        val teamToDelete = state.value.teamSelected
+        viewModelScope.launch {
+            val result = deleteTeamUseCase(teamToDelete ?: return@launch)
+            if (result) {
+                _state.update {
+                    it.copy(teamSelected = null)
+                }
+            }
+        }
     }
 
     fun setSelectedPokemons(pokemons: List<Pokemon>) {
@@ -86,6 +106,12 @@ class TeamsViewModel @Inject constructor(
     fun setMyTeams(teams: List<Team>) {
         _state.update {
             it.copy(teams = teams)
+        }
+    }
+
+    fun setTeamSelected(team: Team) {
+        _state.update {
+            it.copy(teamSelected = team)
         }
     }
 
