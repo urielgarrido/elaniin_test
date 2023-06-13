@@ -1,6 +1,7 @@
 package com.example.elaniin_test.data
 
 import com.example.elaniin_test.data.model.AllRegionResponse
+import com.example.elaniin_test.data.model.PokemonsResponse
 import com.example.elaniin_test.data.model.RegionForIdResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -13,4 +14,7 @@ interface PokemonApi {
 
     @GET("region/{id}")
     suspend fun getRegionId(@Path("id") regionId: Int): Response<RegionForIdResponse>
+
+    @GET("pokedex/{pokedexId}")
+    suspend fun getPokemons(@Path("pokedexId") pokedexId: Int): Response<PokemonsResponse>
 }

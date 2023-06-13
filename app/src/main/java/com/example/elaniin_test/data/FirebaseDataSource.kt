@@ -1,9 +1,12 @@
 package com.example.elaniin_test.data
 
-import com.example.elaniin_test.teams.model.Team
+import com.example.elaniin_test.teams.my_teams.model.Team
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -17,11 +20,17 @@ class FirebaseDataSource @Inject constructor() {
         const val TEAMS_ROOT = "teams"
     }
 
-    suspend fun createTeam(newTeam: Team) {
+    fun getAllTeamsByRegion(valueEventListener: ValueEventListener, region: String) {
         userId?.let { userId ->
-            database.child(userId).child(TEAMS_ROOT).setValue(newTeam)
+            database.child(userId).child(TEAMS_ROOT).child(region).addValueEventListener(valueEventListener)
         }
-        database.child(TEAMS_ROOT).child(newTeam.shareToken).setValue(newTeam)
+    }
+
+    suspend fun createTeam(newTeam: Team): Boolean {
+        userId?.let { userId ->
+           database.child(userId).child(TEAMS_ROOT).child(newTeam.region).push().setValue(newTeam).await()
+        }
+       return database.child(TEAMS_ROOT).child(newTeam.shareToken).setValue(newTeam).isSuccessful
     }
 
     suspend fun editTeam() {

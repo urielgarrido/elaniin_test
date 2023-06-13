@@ -36,7 +36,7 @@ import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegionsScreen(state: RegionsState, regions: List<Region>, userName: String, onRegionClick: (Region) -> Unit) {
+fun RegionsScreen(state: RegionsState, userName: String, onRegionClick: (Region) -> Unit) {
 
     val context = LocalContext.current
 
@@ -52,7 +52,7 @@ fun RegionsScreen(state: RegionsState, regions: List<Region>, userName: String, 
             .fillMaxSize()
             .padding(16.dp)
     ) { padding ->
-        if (regions.isEmpty()) {
+        if (state.regions.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -65,7 +65,7 @@ fun RegionsScreen(state: RegionsState, regions: List<Region>, userName: String, 
                         fontWeight = FontWeight.Bold
                     )
                 }
-                items(regions) {
+                items(state.regions) {
                     RegionItem(name = it.name) { onRegionClick(it) }
                 }
             }

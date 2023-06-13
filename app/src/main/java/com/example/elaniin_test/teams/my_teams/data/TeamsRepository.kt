@@ -1,15 +1,20 @@
-package com.example.elaniin_test.teams.data
+package com.example.elaniin_test.teams.my_teams.data
 
 import com.example.elaniin_test.data.FirebaseDataSource
-import com.example.elaniin_test.teams.model.Team
+import com.example.elaniin_test.teams.my_teams.model.Team
+import com.google.firebase.database.ValueEventListener
 import javax.inject.Inject
 
 class TeamsRepository @Inject constructor(
     private val firebaseDataSource: FirebaseDataSource
 ) {
 
-    suspend fun createTeam(newTeam: Team) {
-        firebaseDataSource.createTeam(newTeam)
+    fun getAllTeamsByRegion(valueEventListener: ValueEventListener, region: String) {
+        return firebaseDataSource.getAllTeamsByRegion(valueEventListener, region)
+    }
+
+    suspend fun createTeam(newTeam: Team): Boolean {
+        return firebaseDataSource.createTeam(newTeam)
     }
 
     suspend fun editTeam() {

@@ -10,6 +10,11 @@
     <string name="click_a_region_to_continue">Seleccione una de las siguientes regiones para continuar</string>
     <string name="get_region_error">No se logró obtener todas las regiones de Pokemon</string>
     <string name="create_your_first_team">Creá tu primer equipo</string>
+    <string name="get_all_teams_error">No se pudo obtener todos tus equipos</string>
+    <string name="get_pokedexes_error">No se pudo obtener los Pokedexes de esta región</string>
+    <string name="select_pokemons_for_your_team">Selecciona entre 3 y 6 Pokemons para agregarlos a tu equipo</string>
+    <string name="max_pokemons_selected">Ya seleccionó el máximo de Pokemons para crear el equipo</string>
+    <string name="min_three_pokemons">Debe seleccionar mínimo 3 Pokemons</string>
 
 
 </resources>
